@@ -1,0 +1,29 @@
+[
+  {
+    "id": "task-1",
+    "title": "Buy groceries for dinner",
+    "description": "Milk, fresh bread, eggs, and coffee",
+    "priority": "high",
+    "dueDate": "2026-10-28",
+    "completed": false,
+    "createdAt": "2026-10-26T20:35:00.000Z"
+  },
+  {
+    "id": "task-2",
+    "title": "Schedule weekly team meeting",
+    "description": "Discuss project updates and upcoming roadmap",
+    "priority": "medium",
+    "dueDate": "2026-10-31",
+    "completed": false,
+    "createdAt": "2026-10-26T19:35:00.000Z"
+  },
+  {
+    "id": "task-3",
+    "title": "Renew gym membership",
+    "description": "Check special annual subscription discount",
+    "priority": "low",
+    "dueDate": "2026-11-02",
+    "completed": true,
+    "createdAt": "2026-10-26T18:35:00.000Z"
+  }
+]

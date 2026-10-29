@@ -1,0 +1,20 @@
+{
+  "name": "todo-app-qa-target",
+  "version": "1.0.0",
+  "description": "Full-stack To-Do Application for QA automation testing",
+  "main": "src/server/server.js",
+  "scripts": {
+    "start": "node src/server/server.js"
+  },
+  "keywords": [
+    "todo-app",
+    "qa",
+    "test-target"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

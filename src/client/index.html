@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskMaster - QA Test Automation Target</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo-area">
+          <span class="logo-icon">✓</span>
+          <div>
+            <h1 data-testid="app-title">TaskMaster</h1>
+            <span class="db-badge" title="Data simulated via tasks.json file">💾 JSON Database</span>
+          </div>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-badge">
+            <span class="stat-label">Total</span>
+            <span class="stat-value" data-testid="stat-total">0</span>
+          </div>
+          <div class="stat-badge stat-active">
+            <span class="stat-label">Active</span>
+            <span class="stat-value" data-testid="stat-active">0</span>
+          </div>
+          <div class="stat-badge stat-completed">
+            <span class="stat-label">Completed</span>
+            <span class="stat-value" data-testid="stat-completed">0</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Create Task Card -->
+      <section class="card creation-card">
+        <h2 class="card-title">Add New Task</h2>
+        <form id="task-form" data-testid="form-add-task" novalidate>
+          <div class="form-row">
+            <div class="form-group flex-grow">
+              <label for="task-title">Title <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="task-title" 
+                data-testid="input-task-title" 
+                placeholder="What needs to be done? (3-100 characters)" 
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label for="task-priority">Priority</label>
+              <select id="task-priority" data-testid="select-task-priority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="task-duedate">Due Date</label>
+              <input type="date" id="task-duedate" data-testid="input-task-duedate">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="task-desc">Description (optional)</label>
+            <input 
+              type="text" 
+              id="task-desc" 
+              data-testid="input-task-description" 
+              placeholder="Additional details, acceptance criteria, or links..."
+            >
+          </div>
+
+          <div class="form-actions">
+            <div id="form-error" class="error-banner hidden" data-testid="form-error-message"></div>
+            <button type="submit" class="btn btn-primary" data-testid="btn-add-task">
+              <span>+ Add Task</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Filters & Controls Bar -->
+      <section class="card controls-card">
+        <div class="controls-toolbar">
+          <div class="search-box">
+            <input 
+              type="text" 
+              id="search-input" 
+              data-testid="input-search" 
+              placeholder="Search tasks by title or details..."
+            >
+            <button id="search-clear-btn" class="search-clear-btn hidden" data-testid="btn-clear-search">×</button>
+          </div>
+
+          <div class="filter-tabs" data-testid="filter-tabs">
+            <button class="filter-tab active" data-filter="all" data-testid="filter-all">All</button>
+            <button class="filter-tab" data-filter="active" data-testid="filter-active">Active</button>
+            <button class="filter-tab" data-filter="completed" data-testid="filter-completed">Completed</button>
+          </div>
+
+          <div class="dropdown-controls">
+            <select id="priority-filter" data-testid="select-filter-priority" title="Filter by priority">
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+
+            <select id="sort-select" data-testid="select-sort" title="Sort by">
+              <option value="createdAt">Sort: Newest</option>
+              <option value="dueDate">Sort: Due Date</option>
+              <option value="priority">Sort: Priority</option>
+            </select>
+
+            <button id="reset-data-btn" class="btn btn-secondary" data-testid="btn-reset-data" title="Reset mock tasks">
+              ↻ Reset Data
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task List Area -->
+      <section class="card list-card">
+        <div class="list-header">
+          <h2 class="card-title">Tasks</h2>
+          <span class="active-count" data-testid="active-tasks-counter">Loading...</span>
+        </div>
+
+        <ul id="tasks-list" class="tasks-list" data-testid="tasks-list">
+          <!-- Dynamically populated via JS -->
+        </ul>
+
+        <div id="empty-state" class="empty-state hidden" data-testid="empty-state">
+          <div class="empty-icon">📝</div>
+          <p class="empty-title">No tasks found</p>
+          <p class="empty-subtitle">Try adjusting your filters or create a new task above.</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Edit Task Modal -->
+    <div id="edit-modal" class="modal hidden" data-testid="modal-edit-task">
+      <div class="modal-backdrop"></div>
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3>Edit Task</h3>
+          <button id="modal-close-x" class="modal-close-x">&times;</button>
+        </div>
+        <form id="edit-form" novalidate>
+          <input type="hidden" id="edit-task-id">
+          
+          <div class="form-group">
+            <label for="edit-task-title">Title <span class="required">*</span></label>
+            <input type="text" id="edit-task-title" data-testid="input-edit-title" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-task-priority">Priority</label>
+              <select id="edit-task-priority" data-testid="select-edit-priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit-task-duedate">Due Date</label>
+              <input type="date" id="edit-task-duedate" data-testid="input-edit-duedate">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-task-desc">Description</label>
+            <textarea id="edit-task-desc" data-testid="input-edit-description" rows="3"></textarea>
+          </div>
+
+          <div id="edit-modal-error" class="error-banner hidden" data-testid="modal-error-message"></div>
+
+          <div class="modal-footer">
+            <button type="button" id="modal-cancel-btn" class="btn btn-secondary" data-testid="btn-modal-cancel">Cancel</button>
+            <button type="submit" class="btn btn-primary" data-testid="btn-modal-save">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="toast-container" data-testid="toast-container"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
