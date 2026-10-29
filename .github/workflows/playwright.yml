@@ -1,0 +1,59 @@
+name: TaskMaster Playwright E2E
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 1. Install app dependencies to run it as test target
+      - name: Install Target App dependencies
+        run: npm ci
+
+      # 2. Install Playwright test dependencies
+      - name: Install E2E Test dependencies
+        working-directory: e2e-tests
+        run: npm ci
+
+      # 3. Install Chromium browser for Playwright
+      - name: Install Playwright Chromium browser
+        working-directory: e2e-tests
+        run: npx playwright install --with-deps chromium
+
+      # 4. Start local web application server in background
+      - name: Start TaskMaster Server
+        run: npm start &
+        env:
+          PORT: 3000
+
+      # 5. Wait until localhost:3000 is ready to serve
+      - name: Wait for server response
+        run: npx wait-on http://127.0.0.1:3000 --timeout 30000
+
+      # 6. Execute Playwright tests
+      - name: Run Playwright tests
+        working-directory: e2e-tests
+        run: npm test
+
+      # 7. Upload HTML test report
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: e2e-tests/playwright-report/
+          retention-days: 14
