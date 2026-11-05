@@ -106,10 +106,4 @@ router.delete("/tasks/:id", (req, res) => {
   res.json({ message: "Task deleted successfully", id: req.params.id });
 });
 
-// POST /api/tasks/reset (Test helper endpoint)
-router.post("/tasks/reset", (req, res) => {
-  const resetTasks = taskStore.reset();
-  res.json({ message: "Store reset to initial fixtures", count: resetTasks.length });
-});
-
 module.exports = router;

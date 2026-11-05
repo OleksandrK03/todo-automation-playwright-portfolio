@@ -28,7 +28,6 @@ const searchClearBtn = document.getElementById("search-clear-btn");
 const filterTabs = document.querySelectorAll(".filter-tab");
 const priorityFilterSelect = document.getElementById("priority-filter");
 const sortSelect = document.getElementById("sort-select");
-const resetDataBtn = document.getElementById("reset-data-btn");
 
 // Modal Elements
 const editModal = document.getElementById("edit-modal");
@@ -187,12 +186,6 @@ const SimulatedDB = {
     all.splice(idx, 1);
     this.saveTasks(all);
     return { message: "Task deleted successfully", id };
-  },
-
-  async reset() {
-    const seed = await this.getInitialSeedTasks();
-    this.saveTasks(seed);
-    return seed;
   }
 };
 
@@ -299,21 +292,6 @@ async function deleteTask(id) {
     }
   }
   return await SimulatedDB.delete(id);
-}
-
-async function resetMockData() {
-  if (useBackend) {
-    try {
-      const res = await fetch("/api/tasks/reset", { method: "POST" });
-      if (res.ok) {
-        return await res.json();
-      }
-      useBackend = false;
-    } catch (_) {
-      useBackend = false;
-    }
-  }
-  return await SimulatedDB.reset();
 }
 
 // UI Feedback
@@ -551,16 +529,6 @@ searchClearBtn.addEventListener("click", () => {
   searchClearBtn.classList.add("hidden");
   state.searchQuery = "";
   fetchTasks();
-});
-
-resetDataBtn.addEventListener("click", async () => {
-  try {
-    await resetMockData();
-    showToast("Reset mock tasks to initial state", "info");
-    await fetchTasks();
-  } catch (err) {
-    showToast(err.message, "error");
-  }
 });
 
 // Initial boot
