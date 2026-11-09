@@ -10,10 +10,11 @@ This directory contains the **UI End-to-End (E2E)** and **REST API** automated t
 
 * **Framework:** Playwright Test (`@playwright/test`)
 * **Language:** TypeScript
+* **Design Pattern:** Page Object Model (POM)
 * **Structure:**
+  * `pages/tasks-page.ts` — Page Object class encapsulating TaskMaster UI elements, navigation, form actions, and statistics getters
   * `tests/ui/` — End-to-End UI tests interacting with the web application in a real browser
   * `tests/api/` — REST API functional & contract tests
-  * `pages/` — Page Object Model (POM) classes *(planned / expanding)*
   * `utils/` — Test helpers, fixtures, and data generators
 
 ---
@@ -39,28 +40,19 @@ npm run test:api
 npx playwright show-report
 ```
 
+> **Note on Concurrency:** `playwright.config.ts` is configured with `workers: 1` to ensure reliable sequential test execution against the shared simulated database (`data/tasks.json`).
+
 ---
 
-## 📋 Implemented Tests Log (Incrementally Updated)
-
-This section documents each automated test as it is added to the test suite.
+## 📋 Implemented Tests Catalog
 
 ### 🖥️ UI (E2E) Tests (`tests/ui/`)
 
-#### 1. Positive Task Creation — [`create-task-positive.spec.ts`](./tests/ui/create-task-positive.spec.ts)
-* **Objective:** Verify that a user can successfully create a new task with valid inputs via the UI form.
-* **Test Data:**
-  * Dynamic unique title (`New Task <timestamp>`)
-  * Priority: `high`
-  * Due Date: `current date + 3 days` (`YYYY-MM-DD`)
-* **Test Steps (`test.step`):**
-  1. **Open the application:** Navigate to the base URL (`/`).
-  2. **Fill the task title:** Enter the dynamic task title into `[data-testid="input-task-title"]` and verify input value.
-  3. **Pick a priority:** Select `high` in `[data-testid="select-task-priority"]` and verify selected value.
-  4. **Pick a due date:** Fill the calculated future date into `[data-testid="input-task-duedate"]` and verify input value.
-  5. **Click the create button:** Click `+ Add Task` and assert that the confirmation toast `'Task created successfully'` is visible.
-
-*(More UI tests will be documented here as they are implemented...)*
+| Test File | Objective | Architecture |
+| :--- | :--- | :--- |
+| **[`create-task-positive.spec.ts`](./tests/ui/create-task-positive.spec.ts)** | Creates a task with valid title, priority, and due date. Verifies confirmation toast, total counter increment, and task card details. | Page Object (`TasksPage`) |
+| **[`create-task-validation-negative.spec.ts`](./tests/ui/create-task-validation-negative.spec.ts)** | Validates form error handling for empty title and title shorter than 3 characters. Verifies task creation is blocked. | Page Object (`beforeEach`) |
+| **[`toggle-task-completion.spec.ts`](./tests/ui/toggle-task-completion.spec.ts)** | Verifies task status toggling via checkbox: checks completed styling and confirms dynamic recalculation of Active and Completed counters. | Page Object (`TasksPage`) |
 
 ---
 

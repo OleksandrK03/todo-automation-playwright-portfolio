@@ -67,11 +67,10 @@ npm run test:api
 
 The application is built without heavy external dependencies to ensure fast startup and deterministic behavior during automated test runs. Every interactive element includes dedicated `data-testid` attributes for resilient locator strategies.
 
-### 💾 Simulated JSON Database & Test Isolation
+### 💾 Simulated JSON Database & Persistence
 Instead of requiring an external database engine (PostgreSQL / MongoDB), the app uses a **JSON-file database simulation**:
 * All tasks are stored in `data/tasks.json`.
 * Creating, editing, toggling status, or deleting a task immediately persists changes to `data/tasks.json`.
-* **Test Isolation Helper:** A dedicated `POST /api/tasks/reset` endpoint (and UI reset button) restores `data/tasks.json` to its initial 3-task baseline state before each test run.
 * **Standalone Fallback:** If `index.html` is opened directly without the Node.js server, the app automatically falls back to client-side `localStorage` emulation.
 
 ### 🧩 Core Application Features (Test Targets)
@@ -94,8 +93,6 @@ Instead of requiring an external database engine (PostgreSQL / MongoDB), the app
    - Minimum title length: **3 characters**.
    - Maximum title length: **100 characters**.
    - Visual `Overdue` badge indicator in red for past-due active tasks.
-5. **State Reset (Testability Feature):**
-   - UI button (`↻ Reset Data`) and API endpoint (`POST /api/tasks/reset`) to restore default seed data between test runs.
 
 ---
 
@@ -123,7 +120,6 @@ All interactive and assertable DOM elements expose `data-testid` attributes for 
 | **Filter: Completed** | `filter-completed` | Tab button to show only completed tasks |
 | **Filter: Priority** | `select-filter-priority`| Dropdown to filter tasks by priority |
 | **Sort Select** | `select-sort` | Dropdown to sort the task list |
-| **Reset Data Button** | `btn-reset-data` | Button `↻ Reset Data` to restore initial state |
 | **Tasks List** | `tasks-list` | Container `<ul>` holding task items |
 | **Task Item** | `task-item` | Individual task row (`<li>`) |
 | **Task Checkbox** | `task-checkbox` | Completion status checkbox inside a task item |
@@ -210,18 +206,13 @@ All endpoints accept and return `Content-Type: application/json`.
   * `200 OK` — `{ "message": "Task deleted successfully", "id": "task-1" }`
   * `404 Not Found`
 
-### 6. Reset State to Default Seed Data (Test Helper)
-* **Endpoint:** `POST /api/tasks/reset`
-* **Response:** `200 OK` — Restores and returns the initial array of 3 default tasks.
-
 ---
 
 ## 🛡️ Testing Strategy & QA Approach
 
-This project demonstrates a multi-layered quality assurance approach combining **UI End-to-End**, **REST API**, and **Hybrid** automated testing:
+This project demonstrates a multi-layered quality assurance approach combining **UI End-to-End** and **REST API** automated testing:
 
-* **UI End-to-End (E2E) Testing:** Verifies critical user journeys in a real browser environment — task creation, form validation, status toggling, modal editing, dynamic filtering, and live search using resilient `data-testid` locators and structured Playwright `test.step` reporting.
+* **UI End-to-End (E2E) Testing:** Verifies critical user journeys in a real browser environment — task creation, form validation, status toggling, modal editing, dynamic filtering, and live search using resilient `data-testid` locators, Page Object Model architecture, and structured Playwright `test.step` reporting.
 * **REST API Testing:** Validates backend endpoints (`GET`, `POST`, `PUT`, `DELETE`), HTTP status codes (`200`, `201`, `400`, `404`), response schemas, query parameter filtering, and negative boundary conditions directly at the API layer.
-* **Hybrid Testing (API + UI):** Uses fast API calls for test data setup/teardown (`POST /api/tasks`, `POST /api/tasks/reset`) combined with UI assertions to keep E2E tests fast, independent, and deterministic.
 
 👉 **Explore the implemented test suite and step-by-step test documentation in [`./e2e-tests/README.md`](./e2e-tests/README.md).**
