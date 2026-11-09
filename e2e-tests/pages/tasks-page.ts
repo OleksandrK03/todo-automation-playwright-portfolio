@@ -5,6 +5,8 @@ export class TasksPage {
 
     // --- Locators: Form ---
     readonly titleInput: Locator;
+    readonly prioritySelect: Locator;
+    readonly dueDateInput: Locator;
     readonly addTaskButton: Locator;
     readonly errorMessage: Locator;
 
@@ -22,6 +24,8 @@ export class TasksPage {
 
         // Form
         this.titleInput = page.getByTestId('input-task-title');
+        this.prioritySelect = page.getByTestId('select-task-priority');
+        this.dueDateInput = page.getByTestId('input-task-duedate');
         this.addTaskButton = page.getByTestId('btn-add-task');
         this.errorMessage = page.getByTestId('form-error-message');
 
@@ -51,6 +55,14 @@ export class TasksPage {
         await this.titleInput.fill(title);
     }
 
+    async selectPriority(priority: string) {
+        await this.prioritySelect.selectOption(priority);
+    }
+
+    async fillDueDate(date: string) {
+        await this.dueDateInput.fill(date);
+    }
+
     async clickAddTask() {
         await this.addTaskButton.click();
     }
@@ -60,6 +72,10 @@ export class TasksPage {
     // ==========================================
     async getTasksCount(): Promise<number> {
         return await this.taskItems.count();
+    }
+
+    getTaskByTitle(title: string): Locator {
+        return this.taskItems.filter({ hasText: title });
     }
 
     async getFirstActiveTask() {
