@@ -18,6 +18,15 @@ export class TasksPage {
     // --- Locators: Task List ---
     readonly taskItems: Locator;
     readonly activeTasks: Locator;
+    readonly editTaskButton: Locator;
+    readonly taskTitle: Locator;
+    readonly taskPriority: Locator;
+
+    // --- Locators: Edit Modal ---
+    readonly editModal: Locator;
+    readonly editPriorityDrop: Locator;
+    readonly saveModalButton: Locator;
+    readonly editTitleInput: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -37,6 +46,15 @@ export class TasksPage {
         // Task items
         this.taskItems = page.locator('.task-item');
         this.activeTasks = page.locator('.task-item:not(.completed)');
+        this.editTaskButton = page.getByTestId('btn-edit-task');
+        this.taskTitle = page.getByTestId('task-title');
+        this.taskPriority = page.getByTestId('task-priority');
+
+        // Edit modal
+        this.editModal = page.locator('.modal-dialog');
+        this.editPriorityDrop = page.getByTestId('select-edit-priority');
+        this.saveModalButton = page.getByTestId('btn-modal-save');
+        this.editTitleInput = page.getByTestId('input-edit-title');
     }
 
     // ==========================================
@@ -67,9 +85,24 @@ export class TasksPage {
         await this.addTaskButton.click();
     }
 
+    async setNewPriority(priority: string) {
+        await this.editPriorityDrop.selectOption(priority);
+    }
+
+    async setNewTitle(newTitle: string) {
+        await this.editTitleInput.fill(newTitle);
+    }
+
+    async clickSaveButton() {
+        await this.saveModalButton.click();
+    }
     // ==========================================
     // Task Helpers
     // ==========================================
+    getFirstTask(): Locator {
+        return this.taskItems.first();
+    }
+
     async getTasksCount(): Promise<number> {
         return await this.taskItems.count();
     }
