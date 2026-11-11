@@ -18,6 +18,7 @@ export class TasksPage {
     // --- Locators: Task List ---
     readonly taskItems: Locator;
     readonly activeTasks: Locator;
+    readonly completedTasks: Locator;
     readonly editTaskButton: Locator;
     readonly deleteTaskButton: Locator;
     readonly taskTitle: Locator;
@@ -28,6 +29,11 @@ export class TasksPage {
     readonly editPriorityDrop: Locator;
     readonly saveModalButton: Locator;
     readonly editTitleInput: Locator;
+
+    // --- Filters ---
+    readonly totalFilterButton: Locator;
+    readonly activeFilterButton: Locator;  
+    readonly completedFilterButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -47,6 +53,7 @@ export class TasksPage {
         // Task items
         this.taskItems = page.locator('.task-item');
         this.activeTasks = page.locator('.task-item:not(.completed)');
+        this.completedTasks = page.locator('.task-item.completed');
         this.editTaskButton = page.getByTestId('btn-edit-task');
         this.deleteTaskButton = page.getByTestId('btn-delete-task');
         this.taskTitle = page.getByTestId('task-title');
@@ -57,6 +64,11 @@ export class TasksPage {
         this.editPriorityDrop = page.getByTestId('select-edit-priority');
         this.saveModalButton = page.getByTestId('btn-modal-save');
         this.editTitleInput = page.getByTestId('input-edit-title');
+
+        // Filters
+        this.totalFilterButton = page.getByTestId('filter-all');
+        this.activeFilterButton = page.getByTestId('filter-active');
+        this.completedFilterButton = page.getByTestId('filter-completed');
     }
 
     // ==========================================
@@ -104,6 +116,18 @@ export class TasksPage {
         await deleteButton.click();
     }
 
+    async clickTotalFilterButton() {
+        await this.totalFilterButton.click();
+    }
+
+    async clickActiveFilterButton() {
+        await this.activeFilterButton.click();
+    }
+
+    async clickCompletedFilterButton() {
+        await this.completedFilterButton.click();
+    }
+
     // ==========================================
     // Task Helpers
     // ==========================================
@@ -113,6 +137,14 @@ export class TasksPage {
 
     async getTasksCount(): Promise<number> {
         return await this.taskItems.count();
+    }
+
+    async getActiveFromTasksCount(): Promise<number> {
+        return await this.activeTasks.count();
+    }
+
+    async getCompletedFromTasksCount(): Promise<number> {
+        return await this.completedTasks.count();
     }
 
     getTaskByTitle(title: string): Locator {
