@@ -19,6 +19,7 @@ export class TasksPage {
     readonly taskItems: Locator;
     readonly activeTasks: Locator;
     readonly editTaskButton: Locator;
+    readonly deleteTaskButton: Locator;
     readonly taskTitle: Locator;
     readonly taskPriority: Locator;
 
@@ -47,6 +48,7 @@ export class TasksPage {
         this.taskItems = page.locator('.task-item');
         this.activeTasks = page.locator('.task-item:not(.completed)');
         this.editTaskButton = page.getByTestId('btn-edit-task');
+        this.deleteTaskButton = page.getByTestId('btn-delete-task');
         this.taskTitle = page.getByTestId('task-title');
         this.taskPriority = page.getByTestId('task-priority');
 
@@ -96,6 +98,12 @@ export class TasksPage {
     async clickSaveButton() {
         await this.saveModalButton.click();
     }
+
+    async clickDeleteTask(task: Locator) {
+        const deleteButton = task.locator(this.deleteTaskButton);
+        await deleteButton.click();
+    }
+
     // ==========================================
     // Task Helpers
     // ==========================================
