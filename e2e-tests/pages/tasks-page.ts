@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 export class TasksPage {
     readonly page: Page;
@@ -35,6 +35,10 @@ export class TasksPage {
     readonly activeFilterButton: Locator;  
     readonly completedFilterButton: Locator;
 
+    // ---Search---
+    readonly searchInput: Locator;
+    readonly clearSearchButton: Locator;
+
     constructor(page: Page) {
         this.page = page;
 
@@ -69,6 +73,10 @@ export class TasksPage {
         this.totalFilterButton = page.getByTestId('filter-all');
         this.activeFilterButton = page.getByTestId('filter-active');
         this.completedFilterButton = page.getByTestId('filter-completed');
+
+        // Search
+        this.searchInput = page.getByTestId('input-search');
+        this.clearSearchButton = page.getByTestId('btn-clear-search');
     }
 
     // ==========================================
@@ -128,6 +136,13 @@ export class TasksPage {
         await this.completedFilterButton.click();
     }
 
+    async clickClearSearchButton() {
+        await this.clearSearchButton.click();
+    }
+
+    async fillSearchInput(keyword: string) {
+        await this.searchInput.fill(keyword);
+    }
     // ==========================================
     // Task Helpers
     // ==========================================
@@ -149,6 +164,13 @@ export class TasksPage {
 
     getTaskByTitle(title: string): Locator {
         return this.taskItems.filter({ hasText: title });
+    }
+
+    async expectAllTasksContainText(keyword: string) {
+        // check that at least one task is displayed
+        await expect(this.taskItems.first()).toBeVisible();
+        // check that all displayed tasks contain the keyword in their title
+        await expect(this.taskItems.filter({ hasNotText: keyword })).toHaveCount(0);
     }
 
     async getFirstActiveTask() {
