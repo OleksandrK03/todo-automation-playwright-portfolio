@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  # 1. Швидка перевірка коду автотестів (~10-15 сек): ESLint + TypeScript TypeCheck
+  # 1. Fast code quality check for automated tests (~10-15s): ESLint + TypeScript TypeCheck
   quality-check:
     name: Tests Lint & Typecheck
     runs-on: ubuntu-latest
@@ -33,7 +33,7 @@ jobs:
         working-directory: e2e-tests
         run: npm run lint
 
-  # 2. Перевірка безпеки сторонніх пакетів (~10 сек)
+  # 2. Third-party dependency security audit (~10s)
   security:
     name: Security Audit
     runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
           npm audit --audit-level=high
           cd e2e-tests && npm audit --audit-level=high
 
-  # 3. Запуск Playwright E2E тестів (стартує лише після успішних швидких перевірок)
+  # 3. Run Playwright E2E tests (runs only after fast checks pass)
   test:
     name: Run E2E Tests
     needs: [quality-check, security]
