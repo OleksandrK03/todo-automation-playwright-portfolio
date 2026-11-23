@@ -21,3 +21,6 @@
      * Submitted fields (`title`, `description`, `priority`, `dueDate`) match the request payload.
 2. **Send a `GET /api/tasks` request to verify persistence.**
    * *Expected:* Server returns status `200 OK` and the `tasks` array contains the newly created task.
+
+### Postconditions
+* Delete the created test task via `DELETE /api/tasks/:id`.

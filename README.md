@@ -1,5 +1,7 @@
 # TaskMaster — QA Automation Portfolio (Playwright + TypeScript)
 
+[![TaskMaster Playwright E2E](https://github.com/OleksandrK03/todo-automation-playwright-portfolio/actions/workflows/playwright.yml/badge.svg)](https://github.com/OleksandrK03/todo-automation-playwright-portfolio/actions/workflows/playwright.yml)
+
 This repository is a **QA Automation portfolio project** covering both **UI End-to-End (E2E)** and **REST API** testing with **Playwright** and **TypeScript**.
 
 To make the tests self-contained and easy to run locally without external dependencies, the repository includes **TaskMaster** — a lightweight full-stack To-Do application (**Node.js / Express** backend + **Vanilla JS** frontend) that acts as the **System Under Test (SUT)**.
