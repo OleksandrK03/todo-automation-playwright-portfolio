@@ -19,6 +19,7 @@ export class TasksPage {
     readonly taskItems: Locator;
     readonly activeTasks: Locator;
     readonly completedTasks: Locator;
+    readonly emptyState: Locator;
     readonly editTaskButton: Locator;
     readonly deleteTaskButton: Locator;
     readonly taskTitle: Locator;
@@ -58,6 +59,7 @@ export class TasksPage {
         this.taskItems = page.locator('.task-item');
         this.activeTasks = page.locator('.task-item:not(.completed)');
         this.completedTasks = page.locator('.task-item.completed');
+        this.emptyState = page.getByTestId('empty-state');
         this.editTaskButton = page.getByTestId('btn-edit-task');
         this.deleteTaskButton = page.getByTestId('btn-delete-task');
         this.taskTitle = page.getByTestId('task-title');
@@ -84,8 +86,8 @@ export class TasksPage {
     // ==========================================
     async goto() {
         await this.page.goto('/');
-        // Wait until tasks are loaded from server and rendered
-        await this.taskItems.first().waitFor();
+        // Wait until initial fetch finishes and either a task card or the visible empty state is rendered
+        await this.page.locator('.task-item, [data-testid="empty-state"]:not(.hidden)').first().waitFor();
     }
 
     // ==========================================
@@ -163,7 +165,13 @@ export class TasksPage {
     }
 
     getTaskByTitle(title: string): Locator {
-        return this.taskItems.filter({ hasText: title });
+        return this.taskItems.filter({
+            has: this.page.getByTestId('task-title').and(this.page.getByText(title, { exact: true })),
+        });
+    }
+
+    getTaskById(taskId: string): Locator {
+        return this.page.locator(`.task-item[data-task-id="${taskId}"]`);
     }
 
     async expectAllTasksContainText(keyword: string) {
@@ -174,14 +182,17 @@ export class TasksPage {
     }
 
     async getFirstActiveTask() {
-        // Pin locator to the specific task by title so it stays stable after toggle
-        const title = await this.activeTasks.first().getByTestId('task-title').innerText();
-        const item = this.taskItems.filter({ hasText: title });
+        // Pin locator to the specific task by its unique data-task-id so it stays stable after status toggle
+        const firstActive = this.activeTasks.first();
+        const taskId = await firstActive.getAttribute('data-task-id');
+        const title = await firstActive.getByTestId('task-title').innerText();
+        const item = this.page.locator(`.task-item[data-task-id="${taskId}"]`);
 
         return {
             item,
             checkbox: item.getByTestId('task-checkbox'),
-            title
+            title,
+            taskId,
         };
     }
 
