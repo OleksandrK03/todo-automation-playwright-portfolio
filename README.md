@@ -1,218 +1,97 @@
-# 🎯 TaskMaster — QA Automation Portfolio (E2E & API Testing)
+# TaskMaster — QA Automation Portfolio (Playwright + TypeScript)
 
-A comprehensive **QA Automation project** built around **TaskMaster**, a full-stack To-Do List web application designed specifically as a **System Under Test (SUT)** for UI End-to-End (E2E) and REST API test automation using **Playwright** and **TypeScript**.
+This repository is a **QA Automation portfolio project** covering both **UI End-to-End (E2E)** and **REST API** testing with **Playwright** and **TypeScript**.
 
-While the repository includes a complete full-stack web application (**Node.js / Express** backend + **Vanilla JS SPA** frontend), the **primary focus of this project is Test Automation**: designing maintainable test architectures, writing reliable UI and API tests, ensuring strict test isolation, and documenting test coverage as the suite evolves.
+To make the tests self-contained and easy to run locally without external dependencies, the repository includes **TaskMaster** — a lightweight full-stack To-Do application (**Node.js / Express** backend + **Vanilla JS** frontend) that acts as the **System Under Test (SUT)**.
 
----
-
-## 🧪 Test Automation Documentation & Progress
-
-All automated tests, framework architecture details, execution instructions, and incremental coverage updates are documented in the dedicated E2E README:
-
-👉 **[📖 Go to Automated Tests Documentation (`./e2e-tests/README.md`)](./e2e-tests/README.md)**
-
-> **Note:** As new UI and API automated tests are written and added to the suite, their descriptions, test steps, and coverage status are progressively documented in [`e2e-tests/README.md`](./e2e-tests/README.md).
-
-### 📂 QA & Testing Artifacts in This Repository
-
-| Directory / File | Description |
-| :--- | :--- |
-| **[`./e2e-tests/`](./e2e-tests/)** | **Playwright Test Automation Framework** (UI & API tests, Page Objects, utilities, and test reports) |
-| **[`./e2e-tests/README.md`](./e2e-tests/README.md)** | **Live Test Suite Documentation** — detailed catalog of implemented automated tests, grew incrementally |
-| **[`./test-cases/`](./test-cases/README.md)** | Structured test case specifications (`TC-UI-*` and `TC-API-*`) used as the basis for automation |
-| **[`./src/`](./src/)** | Source code of the System Under Test (Express REST API + Frontend SPA) |
-| **[`./data/tasks.json`](./data/tasks.json)** | Simulated JSON database file used for state persistence and test reset |
+👉 **[Detailed Test Suite Documentation & List of Tests (`./e2e-tests/README.md`)](./e2e-tests/README.md)**
 
 ---
 
-## ⚡ Quick Start (Application & Tests)
+## 💡 What You Should Know (QA Approach)
 
-### 1. Start the System Under Test (SUT)
+* **Test-Case Driven Automation:** All automated tests are written based on structured test cases stored in the [`./test-cases/`](./test-cases/) folder (`TC-UI-*` and `TC-API-*`).
+* **Resilient Locators (`data-testid`):** Instead of relying on fragile CSS or XPath selectors, interactive elements in the application use dedicated `data-testid` attributes (`page.getByTestId(...)`).
+* **Page Object Model (POM):** All UI locators, actions, and helper methods are organized inside [`e2e-tests/pages/tasks-page.ts`](./e2e-tests/pages/tasks-page.ts) to keep test files clean and readable.
+* **Test Isolation & Data Cleanup:** Tests that modify, delete, or filter specific tasks create their own prerequisite data via the API in `beforeEach` and clean up in `afterEach` so they don't pollute the local database ([`data/tasks.json`](./data/tasks.json)).
+* **Readable Reporting:** Multi-step scenarios are structured with `test.step(...)` and clear comments so the Playwright HTML report is easy to follow.
 
-All application dependencies are pre-installed in the root project. Start the local server:
+---
 
-```bash
-npm start
+## 📂 Project Structure
+
+```text
+├── test-cases/          # Manual test cases (TC-UI-* and TC-API-*) used as the basis for automation
+├── e2e-tests/           # Playwright automation framework
+│   ├── pages/           # Page Object Model classes (tasks-page.ts)
+│   ├── tests/ui/        # UI End-to-End tests
+│   ├── tests/api/       # REST API tests
+│   └── README.md        # Detailed descriptions of all implemented automated tests
+├── src/                 # System Under Test (Express REST API + Frontend SPA)
+└── data/tasks.json      # Local JSON file acting as the database
 ```
 
-Once started, the application is available at:
-* **Web UI:** [http://localhost:3000](http://localhost:3000)
-* **REST API:** [http://localhost:3000/api/tasks](http://localhost:3000/api/tasks)
-* **Simulated JSON DB:** [http://localhost:3000/data/tasks.json](http://localhost:3000/data/tasks.json) (local file: `data/tasks.json`)
+---
 
-### 2. Run Automated Tests (Playwright)
+## ⚡ How to Install & Run Locally
 
-Navigate to the `e2e-tests` directory and run the Playwright test suite:
-
+### 1. Clone the repository
 ```bash
-cd e2e-tests
+git clone https://github.com/OleksandrK03/todo-automation-playwright-portfolio.git
+cd todo-automation-playwright-portfolio
+```
 
-# Run all automated tests (UI + API)
+### 2. Install dependencies
+Install dependencies for the web application (root folder) and for the Playwright test suite (`e2e-tests/` folder):
+```bash
+# 1. Install app dependencies (Express server)
+npm install
+
+# 2. Go to the tests folder, install test dependencies and Chromium browser
+cd e2e-tests
+npm install
+npx playwright install chromium
+```
+
+### 3. Run Automated Tests
+You don't need to start the server manually in a separate terminal — Playwright automatically starts the local app on `http://localhost:3000` before running the tests.
+
+Run from inside `e2e-tests/`:
+```bash
+# Run all tests (UI + API)
 npm test
 
-# Run only UI E2E tests
+# Run only UI tests
 npm run test:ui
-
-# Run UI tests in headed browser mode
-npm run test:headed
 
 # Run only API tests
 npm run test:api
+
+# Run UI tests in headed browser mode (watch execution)
+npm run test:headed
+
+# Open the HTML report after a test run
+npx playwright show-report
 ```
 
----
-
-## 🖥️ System Under Test (SUT) Overview
-
-The application is built without heavy external dependencies to ensure fast startup and deterministic behavior during automated test runs. Every interactive element includes dedicated `data-testid` attributes for resilient locator strategies.
-
-### 💾 Simulated JSON Database & Persistence
-Instead of requiring an external database engine (PostgreSQL / MongoDB), the app uses a **JSON-file database simulation**:
-* All tasks are stored in `data/tasks.json`.
-* Creating, editing, toggling status, or deleting a task immediately persists changes to `data/tasks.json`.
-* **Standalone Fallback:** If `index.html` is opened directly without the Node.js server, the app automatically falls back to client-side `localStorage` emulation.
-
-### 🧩 Core Application Features (Test Targets)
-
-1. **Task CRUD Operations:**
-   - Create a new task with a title, priority (`low`, `medium`, `high`), due date, and description.
-   - Toggle task completion status (`Active` / `Completed`) via checkbox.
-   - Edit existing task details via a modal dialog.
-   - Delete a task from the list.
-2. **Filtering, Sorting & Search:**
-   - Status filter tabs: `All`, `Active`, `Completed`.
-   - Priority filter dropdown (`High`, `Medium`, `Low`).
-   - Sorting options: by creation date (`Newest`), by deadline (`Due Date`), or by importance (`Priority`).
-   - Real-time live search by task title or description.
-3. **Statistics & Counters:**
-   - Header summary badges: `Total`, `Active`, `Completed`.
-   - Dynamic footer counter (*"X active tasks left"*).
-4. **Validation & Error Handling (Targets for Negative Testing):**
-   - Title is required (*Title is required*).
-   - Minimum title length: **3 characters**.
-   - Maximum title length: **100 characters**.
-   - Visual `Overdue` badge indicator in red for past-due active tasks.
+### 4. Open the Application Manually (Optional)
+If you want to launch the web app and explore it in your browser:
+```bash
+# From the project root folder
+npm start
+```
+Then open `http://localhost:3000` in your browser.
 
 ---
 
-## 🎯 UI Selectors Reference (`data-testid`)
+## 📡 Brief Overview of the SUT & REST API
 
-All interactive and assertable DOM elements expose `data-testid` attributes for clean, resilient E2E selectors:
+The application supports creating tasks (with title, priority, due date, and description), editing tasks via a modal window, toggling completion status, deleting tasks, filtering by status/priority, and live keyword search.
 
-| Element | `data-testid` | Description |
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **App Title** | `app-title` | Main application heading |
-| **Counter: Total** | `stat-total` | Total number of tasks badge |
-| **Counter: Active** | `stat-active` | Number of active tasks badge |
-| **Counter: Completed** | `stat-completed` | Number of completed tasks badge |
-| **Active Tasks Text** | `active-tasks-counter` | Footer text *"X active tasks left"* |
-| **Task Title Input** | `input-task-title` | Text input for the new task title |
-| **Task Priority Select** | `select-task-priority` | Priority dropdown (`low`, `medium`, `high`) |
-| **Task Due Date Input** | `input-task-duedate` | Date picker input (`type="date"`) |
-| **Task Description Input** | `input-task-description` | Input field for additional task details |
-| **Add Task Button** | `btn-add-task` | Submit button `+ Add Task` |
-| **Form Error Message** | `form-error-message` | Validation error message container |
-| **Search Input** | `input-search` | Live search text input |
-| **Clear Search Button** | `btn-clear-search` | Button `×` to clear the search query |
-| **Filter: All** | `filter-all` | Tab button to show all tasks |
-| **Filter: Active** | `filter-active` | Tab button to show only active tasks |
-| **Filter: Completed** | `filter-completed` | Tab button to show only completed tasks |
-| **Filter: Priority** | `select-filter-priority`| Dropdown to filter tasks by priority |
-| **Sort Select** | `select-sort` | Dropdown to sort the task list |
-| **Tasks List** | `tasks-list` | Container `<ul>` holding task items |
-| **Task Item** | `task-item` | Individual task row (`<li>`) |
-| **Task Checkbox** | `task-checkbox` | Completion status checkbox inside a task item |
-| **Task Title** | `task-title` | Displayed title of a task in the list |
-| **Task Priority Badge** | `task-priority` | Priority badge on a task item |
-| **Task Due Date Badge** | `task-duedate` | Due date badge on a task item |
-| **Edit Task Button** | `btn-edit-task` | `Edit` button on a task item |
-| **Delete Task Button** | `btn-delete-task` | `Delete` button on a task item |
-| **Edit Task Modal** | `modal-edit-task` | Modal dialog container for editing a task |
-| **Modal Save Button** | `btn-modal-save` | `Save Changes` button inside the edit modal |
-| **Modal Cancel Button** | `btn-modal-cancel` | `Cancel` button inside the edit modal |
-| **Empty State** | `empty-state` | Placeholder block shown when no tasks match |
-
----
-
-## 📡 REST API Reference
-
-All endpoints accept and return `Content-Type: application/json`.
-
-### 1. Get All Tasks
-* **Endpoint:** `GET /api/tasks`
-* **Query Parameters (optional):**
-  * `status`: `all` | `active` | `completed`
-  * `priority`: `all` | `low` | `medium` | `high`
-  * `search`: search substring
-  * `sortBy`: `createdAt` | `dueDate` | `priority`
-* **Response:** `200 OK`
-```json
-{
-  "tasks": [
-    {
-      "id": "task-1",
-      "title": "Explore project architecture",
-      "description": "Review codebase and plan test coverage",
-      "priority": "high",
-      "dueDate": "2026-10-28",
-      "completed": false,
-      "createdAt": "2026-10-26T18:00:00.000Z"
-    }
-  ],
-  "counts": {
-    "total": 3,
-    "active": 2,
-    "completed": 1
-  }
-}
-```
-
-### 2. Get Task by ID
-* **Endpoint:** `GET /api/tasks/:id`
-* **Responses:**
-  * `200 OK` — Task object
-  * `404 Not Found` — `{ "error": "Task not found" }`
-
-### 3. Create a New Task
-* **Endpoint:** `POST /api/tasks`
-* **Request Body:**
-```json
-{
-  "title": "Write automated tests",
-  "description": "Cover core E2E flows",
-  "priority": "high",
-  "dueDate": "2026-11-01"
-}
-```
-* **Responses:**
-  * `201 Created` — Created task object
-  * `400 Bad Request` — Validation error (empty title or fewer than 3 characters)
-
-### 4. Update a Task
-* **Endpoint:** `PUT /api/tasks/:id`
-* **Request Body:** (any subset of updatable fields)
-```json
-{
-  "completed": true,
-  "priority": "medium"
-}
-```
-* **Responses:** `200 OK` | `400 Bad Request` | `404 Not Found`
-
-### 5. Delete a Task
-* **Endpoint:** `DELETE /api/tasks/:id`
-* **Responses:**
-  * `200 OK` — `{ "message": "Task deleted successfully", "id": "task-1" }`
-  * `404 Not Found`
-
----
-
-## 🛡️ Testing Strategy & QA Approach
-
-This project demonstrates a multi-layered quality assurance approach combining **UI End-to-End** and **REST API** automated testing:
-
-* **UI End-to-End (E2E) Testing:** Verifies critical user journeys in a real browser environment — task creation, form validation, status toggling, modal editing, dynamic filtering, and live search using resilient `data-testid` locators, Page Object Model architecture, and structured Playwright `test.step` reporting.
-* **REST API Testing:** Validates backend endpoints (`GET`, `POST`, `PUT`, `DELETE`), HTTP status codes (`200`, `201`, `400`, `404`), response schemas, query parameter filtering, and negative boundary conditions directly at the API layer.
-
-👉 **Explore the implemented test suite and step-by-step test documentation in [`./e2e-tests/README.md`](./e2e-tests/README.md).**
+| `GET` | `/api/tasks` | Returns `{ tasks, counts }`. Supports `?status=`, `?priority=`, `?search=`, and `?sortBy=` query params |
+| `GET` | `/api/tasks/:id` | Returns a single task by ID (`200 OK`) or `404 Not Found` |
+| `POST` | `/api/tasks` | Creates a new task (`201 Created`) or returns validation errors (`400 Bad Request`) |
+| `PUT` | `/api/tasks/:id` | Updates task fields (`200 OK`, `400 Bad Request`, or `404 Not Found`) |
+| `DELETE` | `/api/tasks/:id` | Deletes a task by ID (`200 OK` or `404 Not Found`) |
