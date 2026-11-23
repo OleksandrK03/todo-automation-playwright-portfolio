@@ -26,3 +26,6 @@
      * Confirmation message `"Task created successfully"` is visible.
      * The `Total` tasks counter in the header increases by `1`.
      * The new task card appears in the list with the expected title, priority, and due date.
+
+### Postconditions
+* Delete the created task via `DELETE /api/tasks/:id`.

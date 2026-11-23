@@ -24,6 +24,30 @@ test.describe('Create task validation errors', () => {
         });
     });
 
+    test('Empty or whitespace-only title', async ({ request }) => {
+
+        // step 1: Attempt to create a new task with an empty/whitespace title
+        await test.step('Create a new task with whitespace-only title', async () => {
+            const response = await request.post('/api/tasks', {
+                data: {
+                    title: '   ',
+                },
+            });
+
+            // Verify that the response status is 400 (Bad Request)
+            expect(response.status()).toBe(400);
+
+            // Get the response body containing the error message
+            const body = await response.json();
+
+            // Verify that the error message matches the expected validation error
+            expect(body).toEqual({
+                error: 'Validation failed',
+                details: ['Title is required'],
+            });
+        });
+    });
+
     test('Title shorter than 3 characters', async ({ request }) => {
 
         // step 1: Attempt to create a new task with a short title (less than 3 characters)
@@ -44,6 +68,30 @@ test.describe('Create task validation errors', () => {
             expect(body).toEqual({
                 error: 'Validation failed',
                 details: ['Title must be at least 3 characters long'],
+            });
+        });
+    });
+
+    test('Title exceeding maximum length of 100 characters', async ({ request }) => {
+
+        // step 1: Attempt to create a task with a 101-character title (boundary value test)
+        await test.step('Create a new task with 101-character title', async () => {
+            const response = await request.post('/api/tasks', {
+                data: {
+                    title: 'a'.repeat(101),
+                },
+            });
+
+            // Verify that the response status is 400 (Bad Request)
+            expect(response.status()).toBe(400);
+
+            // Get the response body containing the error message
+            const body = await response.json();
+
+            // Verify that the error message matches the expected validation error
+            expect(body).toEqual({
+                error: 'Validation failed',
+                details: ['Title must not exceed 100 characters'],
             });
         });
     });

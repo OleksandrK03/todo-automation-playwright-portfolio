@@ -17,3 +17,7 @@
    * *Expected:*
      * Server returns status `404 Not Found`.
      * Response body contains `error: "Task not found"`.
+3. **Send a repeated `DELETE /api/tasks/:id` request for the same deleted task ID.**
+   * *Expected:*
+     * Server returns status `404 Not Found`.
+     * Response body matches `{ error: "Task not found", id: "<deleted_task_id>" }`.

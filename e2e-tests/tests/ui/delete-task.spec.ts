@@ -39,8 +39,7 @@ test.describe('Delete Task feature', () => {
         // step 3: Verify that the task is no longer visible and the task count has decreased
         await test.step('Verify task deletion', async () => {
             await expect(taskToDelete).toBeHidden();
-            const countAfterDeletion = await tasksPage.getTotalTasksCount();
-            expect(countAfterDeletion).toBe(initialCount - 1);
+            await expect(tasksPage.totalTasksCount).toHaveText(String(initialCount - 1));
         });
     });
 });

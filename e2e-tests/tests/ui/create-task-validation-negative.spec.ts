@@ -29,8 +29,7 @@ test.describe('Task title validation', () => {
 
         // step 3: Check that the task count has not increased
         await test.step('check that the task count has not increased', async () => {
-            const countAfter = await tasksPage.getTasksCount();
-            expect(countAfter).toBe(initialCount);
+            await expect(tasksPage.taskItems).toHaveCount(initialCount);
         });
     });
 
@@ -50,8 +49,7 @@ test.describe('Task title validation', () => {
 
         // step 3: Check that the task count has not increased
         await test.step('check that the task count has not increased', async () => {
-            const countAfter = await tasksPage.getTasksCount();
-            expect(countAfter).toBe(initialCount);
+            await expect(tasksPage.taskItems).toHaveCount(initialCount);
         });
     });
 });
