@@ -46,5 +46,18 @@ test.describe('Delete Task API', () => {
 
             expect(responseBody.error).toBe('Task not found');
         });
+
+        // step 3: Attempt to delete the already deleted task again and verify 404 response
+        await test.step('Verify repeated deletion returns 404 Not Found', async () => {
+            const secondDeleteRes = await request.delete(`/api/tasks/${taskId}`);
+
+            expect(secondDeleteRes.status()).toBe(404);
+
+            const responseBody = await secondDeleteRes.json();
+            expect(responseBody).toEqual({
+                error: 'Task not found',
+                id: taskId,
+            });
+        });
     });
 });
