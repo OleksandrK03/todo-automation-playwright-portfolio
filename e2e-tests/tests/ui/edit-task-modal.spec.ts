@@ -25,6 +25,12 @@ test.describe('Edit Task feature', () => {
         await tasksPage.goto();
     });
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Edit task', async ({ page }) => {
         const newTitle = `Updated Task ${Date.now()}`;
         const newPriority = 'high';
@@ -63,11 +69,5 @@ test.describe('Edit Task feature', () => {
             await expect(targetTask.locator(tasksPage.taskTitle)).toHaveText(newTitle);
             await expect(targetTask.locator(tasksPage.taskPriority)).toHaveText(newPriority);
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });

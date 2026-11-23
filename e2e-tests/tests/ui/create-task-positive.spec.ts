@@ -4,6 +4,12 @@ import { TasksPage } from '../../pages/tasks-page';
 test.describe('Create Task feature', () => {
     let createdTaskId: string | null = null;
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${createdTaskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Create task positive', async ({ page }) => {
         const tasksPage = new TasksPage(page);
 
@@ -56,14 +62,8 @@ test.describe('Create Task feature', () => {
             await expect(createdTask.getByText(date)).toBeVisible();
 
             // store task ID for cleanup in afterEach
+            await expect(createdTask).toHaveAttribute('data-task-id', /^task-/);
             createdTaskId = await createdTask.getAttribute('data-task-id');
-            expect(createdTaskId).toBeTruthy();
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${createdTaskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });

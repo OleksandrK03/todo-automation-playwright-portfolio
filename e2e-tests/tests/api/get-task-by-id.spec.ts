@@ -19,6 +19,12 @@ test.describe('Get Task by ID API', () => {
         taskId = created.id;
     });
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Get task by ID API', async ({ request }) => {
         await test.step('Get task by ID and verify response', async () => {
             const getCreatedRes = await request.get(`/api/tasks/${taskId}`, {
@@ -57,11 +63,5 @@ test.describe('Get Task by ID API', () => {
                 id: nonExistentId,
             });
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });

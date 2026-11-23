@@ -20,6 +20,12 @@ test.describe('Update Task API', () => {
         taskId = created.id;
     });
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Update task fields via PUT', async ({ request }) => {
         const updatedData = {
             title: `Task_Updated_${Date.now()}`,
@@ -78,11 +84,5 @@ test.describe('Update Task API', () => {
                 id: nonExistentId,
             });
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });

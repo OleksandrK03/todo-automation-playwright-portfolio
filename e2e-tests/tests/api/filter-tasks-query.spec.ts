@@ -23,6 +23,12 @@ test.describe('Filter Tasks API', () => {
         taskId = created.id;
     });
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Filter and search tasks via query parameters', async ({ request }) => {
         // step 1: Filter tasks by search keyword and verify the matching task is returned
         await test.step('Filter tasks by search keyword', async () => {
@@ -59,11 +65,5 @@ test.describe('Filter Tasks API', () => {
             const responseBody = await statusRes.json();
             expect(responseBody.tasks[0].completed).toBe(false);
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${taskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });

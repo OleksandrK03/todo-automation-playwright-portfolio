@@ -3,6 +3,12 @@ import { test, expect } from '@playwright/test';
 test.describe('Create Task API', () => {
     let createdTaskId: string;
 
+    test.afterEach(async ({ request }) => {
+        // Clean up the created task after the test finishes to avoid polluting test data
+        const deleteRes = await request.delete(`/api/tasks/${createdTaskId}`);
+        expect(deleteRes.status()).toBe(200);
+    });
+
     test('Create task API', async ({ request }) => {
         const newTask = {
             title: `API Test Task Created ${Date.now()}`,
@@ -43,11 +49,5 @@ test.describe('Create Task API', () => {
             // Check that the created task is present in the tasks array
             expect(body.tasks).toContainEqual(expect.objectContaining(newTask));
         });
-    });
-
-    test.afterEach(async ({ request }) => {
-        // Clean up the created task after the test finishes to avoid polluting test data
-        const deleteRes = await request.delete(`/api/tasks/${createdTaskId}`);
-        expect(deleteRes.status()).toBe(200);
     });
 });
